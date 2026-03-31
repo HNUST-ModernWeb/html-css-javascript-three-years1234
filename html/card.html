@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息卡片</title>
+    <link rel="stylesheet" href="../css/card.css">
+    <link rel="stylesheet" href="../css/default.css">
+</head>
+<body>
+    <h1>个人信息卡片</h1>
+    <div class="card-container">
+        <!-- 头像区域 -->
+        <div class="avatar-container">
+            <img src="../img/默认头像.png" alt="个人头像" class="avatar" id="avatar">
+            <input type="file" id="avatar-upload" accept="image/*">
+            <span class="avatar-tip">点击头像更换</span>
+        </div>
+
+        <!-- 姓名区域 -->
+        <div class="info-item">
+            <label class="info-label">姓名</label>
+            <div class="info-display" id="name-display" contenteditable="true">张三</div>
+        </div>
+
+        <!-- 个人简介区域 -->
+        <div class="info-item">
+            <label class="info-label">个人简介</label>
+            <div class="info-display" id="intro-display" contenteditable="true">热爱生活，积极向上，喜欢编程和旅行。</div>
+        </div>
+
+        <!-- 保存按钮 -->
+        <button class="save-btn" id="save-btn">保存</button>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const avatar = document.getElementById('avatar');
+        const avatarUpload = document.getElementById('avatar-upload');
+        const nameDisplay = document.getElementById('name-display');
+        const introDisplay = document.getElementById('intro-display');
+        const saveBtn = document.getElementById('save-btn');
+
+        // 1. 头像上传功能：点击头像触发文件选择
+        avatar.addEventListener('click', () => {
+            avatarUpload.click();
+        });
+
+        // 头像文件选择后，实时预览更新
+        avatarUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // 创建文件读取对象
+                const reader = new FileReader();
+                // 读取文件完成后更新头像src
+                reader.onload = (event) => {
+                    avatar.src = event.target.result;
+                };
+                // 以DataURL形式读取文件
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 2. 保存功能：点击保存按钮，确认修改（此处无需后端，仅前端确认）
+        saveBtn.addEventListener('click', () => {
+            // 获取修改后的内容
+            const newName = nameDisplay.innerText.trim();
+            const newIntro = introDisplay.innerText.trim();
+
+            // 简单验证（非空）
+            if (!newName) {
+                alert('姓名不能为空，请输入姓名！');
+                nameDisplay.focus();
+                return;
+            }
+
+            // 保存成功提示（创新加分项：添加提示动画）
+            saveBtn.disabled = true;
+            saveBtn.innerText = '保存中...';
+            setTimeout(() => {
+                alert('保存成功！');
+                saveBtn.disabled = false;
+                saveBtn.innerText = '保存';
+            }, 800);
+        });
+
+        // 3. 可选优化：点击输入区域外，自动失焦（提升体验）
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            if (!target.closest('.info-display') && !target.closest('.avatar-container') && !target.closest('.save-btn')) {
+                nameDisplay.blur();
+                introDisplay.blur();
+            }
+        });
+
+        //轮播图设计
+        const pictures=[
+        "../img/风景1.jpg",
+        "../img/风景2.jpg",
+        "../img/风景3.jpg",
+        "../img/风景4.jpg",
+        "../img/风景5.jpg",
+        "../img/风景6.jpg",
+        "../img/风景7.jpg"
+    ]
+       function GetRandom(n, m) {
+          return n + Math.floor(Math.random() * (m - n + 1))
+        }
+        // 1. 新增：创建一个包含所有索引的池子
+        let pool = [0, 1, 2, 3, 4, 5,6];
+        // 2. 新增：获取不重复随机数的函数
+        function getUniqueRandom() {
+        // 如果池子空了，说明一轮播完，重置池子
+        if (pool.length === 0) {
+        pool = [0, 1, 2, 3, 4, 5,6];
+       }
+        // 随机生成一个位置
+        const randomPos = Math.floor(Math.random() * pool.length);
+        // 取出该索引
+        const index = pool[randomPos];
+        // 从池子中删除，防止下次再次出现
+        pool.splice(randomPos, 1);
+        return index;
+        }
+        // 初始化页面
+        const rad = getUniqueRandom(); 
+        const htmlbgc = document.querySelector('html')
+        
+        // 轮播定时器
+        const timer = setInterval(() => {
+        const rad = getUniqueRandom(); //  4. 修改这里：使用新函数获取下一张图
+        htmlbgc.style.background = `url(${pictures[rad]}), no-repeat center center`;
+        htmlbgc.style.backgroundSize = 'cover';
+      }, 2000);  
+    </script>
+</body>
+</html>
